@@ -1,7 +1,7 @@
 # Build results
-YandexSearchApp/bin/
-YandexSearchApp/obj/
-YandexSearchApp/publish/
+bin/
+obj/
+publish/
 *.exe
 *.dll
 *.pdb
@@ -16,26 +16,26 @@ YandexSearchApp/publish/
 *.nupkg
 
 # Visual Studio
-YandexSearchApp/.vscode/
-YandexSearchApp/.vs/
-YandexSearchApp/.vscode/settings.json
-YandexSearchApp/.idea/
+.vscode/
+.vs/
+.vscode/settings.json
+.idea/
 *.sln.ide
 *.code-workspace
 
 # NuGet
-YandexSearchApp/packages/
-YandexSearchApp/.nuget/
-YandexSearchApp/project.lock.json
-YandexSearchApp/project.fragment.lock.json
+packages/
+.nuget/
+project.lock.json
+project.fragment.lock.json
 
 # Artifacts
-YandexSearchApp/artifacts/
-YandexSearchApp/out/
+artifacts/
+out/
 
 # Docker
-YandexSearchApp/Dockerfile
-YandexSearchApp/*.dockerignore
+Dockerfile
+*.dockerignore
 
 # macOS
 .DS_Store
