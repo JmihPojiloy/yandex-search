@@ -21,10 +21,10 @@ namespace YandexSearchApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Index(SearchRequest request)
+        public IActionResult Index(SearchRequest request)
         {
             var stopwatch = Stopwatch.StartNew();
-            var results = await _searchService.PerformSearch(request);
+            var results = _searchService.PerformSearch(request);
             stopwatch.Stop();
             ViewBag.TotalTimeTaken = stopwatch.Elapsed.TotalSeconds;
 

@@ -1,8 +1,12 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Interactions;
+using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.UI;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using YandexSearchApp.Models;
+
 
 namespace YandexSearchApp.Services
 {
@@ -13,19 +17,42 @@ namespace YandexSearchApp.Services
         public SearchService(IConfiguration configuration) =>
             _configuration = configuration;
 
-        public async Task<List<SearchResult>> PerformSearch(SearchRequest request)
+        public List<SearchResult> PerformSearch(SearchRequest request)
         {
             var results = new List<SearchResult>();
+
             var options = new ChromeOptions();
-            //options.AddArgument("--headless");
+
+            options.AddArgument("--disable-blink-features=AutomationControlled");
+            options.AddArgument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36");
+            options.AddArgument("--headless");
+            options.AddArgument("--ignore-certificate-errors");
+            options.AddArgument("--no-sandbox");
+            options.AddArgument("--disable-dev-shm-usage");
+            options.AddArgument("--disable-gpu");
+            options.AddArgument("--window-size=1920,1080");
+            options.AddArgument("--disable-software-rasterizer");
+            options.AddArgument("--disable-extensions");
+            options.AddExcludedArgument("enable-automation");
+
+            var service = ChromeDriverService.CreateDefaultService(@"C:\chromedriver", "chromedriver.exe");
 
 
-            using (var driver = new ChromeDriver(options))
+            var seleniumHubUrl = _configuration["SELENIUM_HUB_URL"]!;
+
+            using (var driver = new RemoteWebDriver(new Uri(seleniumHubUrl), options))
             {
+                driver.Manage().Timeouts().PageLoad = TimeSpan.FromMinutes(2);
+                driver.Manage().Timeouts().AsynchronousJavaScript = TimeSpan.FromSeconds(60);
 
-                await driver.Navigate().GoToUrlAsync($"{_configuration["YandexSearchUrl"]}?text={Uri.EscapeDataString(request.SearchKeyword!)}");
+                Actions actions = new Actions(driver);
+                actions.MoveByOffset(10, 10).Perform();
+
+                driver.Navigate().GoToUrl($"{_configuration["YandexSearchUrl"]}?text={Uri.EscapeDataString(request.SearchKeyword!)}");
 
                 var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+
+                driver.Manage().Cookies.AddCookie(new Cookie("cookie_name", "cookie_value"));
 
                 int currentIndex = request.StartIndex;
                 int remainingResult = request.PageSize;
@@ -36,11 +63,11 @@ namespace YandexSearchApp.Services
 
                     var listItems = driver.FindElements(By.TagName("li"));
 
-                    if (listItems == null)
+                    if (listItems == null || listItems!.Count <= 0)
                     {
                         results.Add(new SearchResult
                         {
-                            RequestedUrl = "no url",
+                            RequestedUrl = _configuration["YandexSearchUrl"],
                             PageTitle = "Capcha found!",
                             TimeTaken = 0,
                             SearchPatternCount = 0
