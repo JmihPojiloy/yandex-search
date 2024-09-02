@@ -3,7 +3,7 @@ dotnet run http://localhost:5023
 docker-compose up http://localhost:5400
 
 Развернутое приложение доступно по адресу
-https://a29209-7f0f.v.d-f.pw/
+http://82.97.247.159:5400/
 
 Соединение происходит через драйвер браузера Selenium,
 для этого добавлена зависимость от Selenium remote
